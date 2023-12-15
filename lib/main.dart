@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:intl/intl.dart';
 
 Future<String> loadAsset() async {
   return await rootBundle.loadString('assets/config.json');
@@ -11,6 +12,8 @@ void main() {
 }
 
 class NewRoute extends StatelessWidget {
+  const NewRoute({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,6 +56,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       initialRoute: '/',
+      debugShowCheckedModeBanner: false,
       onGenerateRoute: (RouteSettings settings) {
         return MaterialPageRoute(builder: (context) {
           String routeName = settings.name!;
@@ -71,11 +75,11 @@ class MyApp extends StatelessWidget {
         "tip": (context) => TipRoute(
               text: ModalRoute.of(context)!.settings.arguments as String,
             ),
-        "/": (context) =>
-            const MyHomePage(title: 'Flutter Demo Home Page'), //注册首页路由
+        "/": (context) => const MyHomePage(), //注册首页路由
       },
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme:
+            const ColorScheme.dark(primary: Color.fromARGB(229, 25, 24, 24)),
         useMaterial3: true,
       ),
     );
@@ -83,8 +87,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -164,46 +167,46 @@ class _MyHomePageState extends State<MyHomePage> {
   static const Color drawerBackgroundColor = Color(0xFF222222);
   static const TextStyle textStyle = TextStyle(color: Colors.white);
 
-  List<Widget> titles = [
-    ListTile(
-      textColor: textStyle.color,
-      title: const Text(
-        "Home22",
-      ),
-      hoverColor: hoverColor,
-      onTap: () {
-        print("Home tap");
-      },
-      selectedTileColor: Colors.black,
-    ),
-    ListTile(
-      textColor: textStyle.color,
-      title: const Text("Home"),
-      hoverColor: hoverColor,
-      onTap: () {
-        print("Home tap");
-      },
-      selected: false,
-    ),
-    ListTile(
-      textColor: textStyle.color,
-      title: const Text("Home"),
-      hoverColor: hoverColor,
-      onTap: () {
-        print("Home tap");
-      },
-      selected: false,
-    ),
-    ListTile(
-      textColor: textStyle.color,
-      hoverColor: hoverColor,
-      title: const Text("Home"),
-      onTap: () {
-        print("Home tap");
-      },
-      selected: false,
-    ),
-  ];
+  List<Widget> get titles => [
+        ListTile(
+          textColor: textStyle.color,
+          title: const Text(
+            "Home22",
+          ),
+          hoverColor: hoverColor,
+          onTap: () {
+            print("Home tap");
+          },
+          selectedTileColor: Colors.black,
+        ),
+        ListTile(
+          textColor: textStyle.color,
+          title: const Text("Home"),
+          hoverColor: hoverColor,
+          onTap: () {
+            print("Home tap");
+          },
+          selected: false,
+        ),
+        ListTile(
+          textColor: textStyle.color,
+          title: const Text("Home"),
+          hoverColor: hoverColor,
+          onTap: () {
+            print("Home tap");
+          },
+          selected: false,
+        ),
+        ListTile(
+          textColor: textStyle.color,
+          hoverColor: hoverColor,
+          title: const Text("Home"),
+          onTap: () {
+            print("Home tap");
+          },
+          selected: false,
+        ),
+      ];
 
   void _incrementCounter() {
     setState(() {
@@ -234,47 +237,202 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.of(context).pushNamed("tip", arguments: "hello");
   }
 
-  late AppBar appBar = AppBar(
-    backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-    title: Text(
-      widget.title,
-      style: textStyle,
-      textAlign: TextAlign.end,
-    ),
-  );
+  static const TextStyle titleStyle =
+      TextStyle(color: Colors.white, fontSize: 14);
 
-  late ListView listView = ListView(
-    padding: EdgeInsets.zero,
-    physics: const NeverScrollableScrollPhysics(),
-    children: [
-      const CustomDrawerHeader(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('assets/images/a.png'), fit: BoxFit.fill),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "账号信息",
-                style: textStyle,
-              )
-            ],
+  String get appBarTitle {
+    final String formatted = DateFormat('MM dd,yyyy').format(DateTime.now());
+    return formatted;
+  }
+
+  get appBar {
+    return AppBar(
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      title: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            appBarTitle,
+            style: titleStyle,
           )),
-      ...titles,
-    ],
-  );
+      actions: <Widget>[
+        IconButton(
+            icon: const Icon(
+              Icons.search,
+              color: Colors.grey,
+            ),
+            onPressed: () {
+              // handle the press
+            }),
+        IconButton(
+            icon: const Icon(Icons.more_vert),
+            iconSize: 20,
+            color: Colors.grey,
+            onPressed: () {
+              // handle the press
+            }),
+      ],
+    );
+  }
 
-  late Drawer drawer = Drawer(
-    backgroundColor: drawerBackgroundColor,
-    width: MediaQuery.of(context).size.width * 0.8,
-    // clipBehavior: Clip.none,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.zero),
-    ),
-    child: listView,
-  );
+  ListView get listView => ListView(
+        padding: EdgeInsets.zero,
+        physics: const NeverScrollableScrollPhysics(),
+        children: [
+          const CustomDrawerHeader(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage('assets/images/a.png'), fit: BoxFit.fill),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "账号信息",
+                    style: textStyle,
+                  )
+                ],
+              )),
+          ...titles,
+        ],
+      );
+
+  Drawer get drawer {
+    return Drawer(
+      backgroundColor: drawerBackgroundColor,
+      width: MediaQuery.of(context).size.width * 0.8,
+      // clipBehavior: Clip.none,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.zero),
+      ),
+      child: listView,
+    );
+  }
+
+  String get currentYear {
+    return DateFormat('yyyy').format(DateTime.now());
+  }
+
+  int get passDays {
+    var now = DateTime.now();
+    var firstDayOfThisYear = DateTime(now.year, 1, 1);
+    // 计算今年已经过去了多少天
+    var pastDays = now.difference(firstDayOfThisYear).inDays;
+    return pastDays + 1;
+  }
+
+  String get passProcess {
+    return passProcessNumber.toString();
+  }
+
+  int get passProcessNumber {
+    return (passDays * 100 ~/ currentYearTotalDays);
+  }
+
+  bool get isLeapYear {
+    final year = int.parse(currentYear);
+    final isLeapYear = (0 == year % 4 && year % 100 != 0) || (0 == year % 400);
+    return isLeapYear;
+  }
+
+  int get currentYearTotalDays {
+    return isLeapYear ? 366 : 365;
+  }
+
+  Widget get passTime {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 36, top: 40),
+      child: Column(
+        children: [
+          (Text(
+            '$currentYear 已经过去 $passProcess%',
+            style: const TextStyle(fontSize: 18),
+          )),
+          Padding(
+            padding: const EdgeInsets.only(left: 30, right: 30, top: 12),
+            child: LinearProgressIndicator(
+              value: passProcessNumber / 100,
+              minHeight: 10,
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              valueColor: const AlwaysStoppedAnimation(Colors.amber),
+            ),
+          ),
+          Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                  padding: const EdgeInsets.only(top: 5, right: 30),
+                  child: Text(
+                    '$passDays / $currentYearTotalDays',
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  )))
+        ],
+      ),
+    );
+  }
+
+  Iterable<Widget> get days {
+    return [
+      {"title": "脉脉", "startDate": DateTime.parse("2021-10-13")},
+      {"title": "脉脉", "startDate": DateTime.parse("2020-10-28")},
+      {"title": "脉脉", "startDate": DateTime.parse("2021-10-13")},
+    ].map((e) => renderDay(e));
+  }
+
+  Widget renderDay(day) {
+    String title = day["title"];
+    DateTime startDate = day["startDate"];
+    var dateFormat = DateFormat('MM dd,yyyy');
+    var now = DateTime.now();
+    // 计算今年已经过去了多少天
+    var pastDays = now.difference(startDate).inDays;
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.blueGrey,
+        borderRadius: BorderRadius.circular(12), // 圆角半径
+      ),
+      margin: const EdgeInsets.only(bottom: 14, right: 16, left: 16),
+      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+      height: 90,
+      child: Row(children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
+            Text(
+              dateFormat.format(startDate),
+              style: const TextStyle(
+                  fontSize: 12, color: Color.fromARGB(255, 211, 205, 205)),
+            )
+          ],
+        ),
+        const Spacer(),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text.rich(TextSpan(
+                style: const TextStyle(
+                    color: Color.fromARGB(255, 211, 205, 205), fontSize: 12),
+                children: [
+                  const TextSpan(text: "已经过去"),
+                  TextSpan(
+                      text: "$pastDays",
+                      style:
+                          const TextStyle(fontSize: 20, color: Colors.white)),
+                  const TextSpan(text: "Days"),
+                ]))
+          ],
+        )
+      ]),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -283,29 +441,10 @@ class _MyHomePageState extends State<MyHomePage> {
       drawer: drawer,
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            const DefaultTextStyle(
-              style: TextStyle(
-                color: Colors.amber,
-                fontSize: 20,
-              ),
-              textAlign: TextAlign.left,
-              child: Text.rich(TextSpan(
-                  children: [
-                    TextSpan(
-                        text: "span1", style: TextStyle(color: Colors.black))
-                  ],
-                  text: AutofillHints.addressCity,
-                  style: TextStyle(color: Colors.red))),
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            passTime,
+            ...days,
           ],
         ),
       ),
