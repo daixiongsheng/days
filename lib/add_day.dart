@@ -71,11 +71,11 @@ class AddDayPageState extends State<AddDay> {
             icon: const Icon(Icons.check),
             onPressed: () {
               //
-              if (_date == null || _unameController.text.isEmpty) {
+              if (_unameController.text.isEmpty) {
                 logger.i("输入内容");
                 return;
               }
-              Day day = Day(_unameController.text, _color, _date!);
+              Day day = Day(_unameController.text, _color, _date);
               Navigator.pop(context, day);
             }),
       ],
@@ -84,7 +84,7 @@ class AddDayPageState extends State<AddDay> {
 
   final TextEditingController _unameController = TextEditingController();
 
-  DateTime? _date;
+  DateTime _date = DateTime.now();
   Color _color = ColorAsset.random();
 
   @override
@@ -134,11 +134,8 @@ class AddDayPageState extends State<AddDay> {
               child: Row(
                 children: [
                   Text(
-                    _date != null
-                        ? DateFormat(
-                                AppLocalizations.of(context)!.appTitleFormat)
-                            .format(_date!)
-                        : '哪天?',
+                    DateFormat(AppLocalizations.of(context)!.appTitleFormat)
+                        .format(_date),
                     style: const TextStyle(
                       fontSize: 24,
                     ),
