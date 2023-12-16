@@ -1,4 +1,5 @@
 {
   "appTitle": "app标题",
-  "appTitleFormat": "yyyy / MM / dd"
+  "appTitleFormat": "yyyy / MM / dd",
+  "addDay": "新建 - 那天"
 }

@@ -39,6 +39,7 @@ dependencies:
   logger: ^2.0.2+1
   flutter_easyrefresh: ^2.2.2
   lunar: ^1.6.1
+  flutter_colorpicker: ^1.0.3
 
 dev_dependencies:
   flutter_test:

@@ -3,10 +3,13 @@ import 'package:flutter_application_1/color_page.dart';
 import 'package:flutter_application_1/extensions/color.dart';
 import 'package:flutter_application_1/logger/logger.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart'; // 导入生成的本地化资源
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:lunar/lunar.dart';
+
+import 'add_day.dart';
+import 'route.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: AppLocalizations.of(context)?.appTitle ?? '',
-      initialRoute: '/',
+      initialRoute: Routes.home,
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         AppLocalizations.delegate, // 本地化代理
@@ -28,8 +31,9 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       routes: {
-        "add": (context) => const ColorsPage(),
-        "/": (context) => const MyHomePage(), //注册首页路由
+        // "add": (context) => const ColorsPage(),
+        Routes.add: (context) => const AddDay(),
+        Routes.home: (context) => const MyHomePage(), //注册首页路由
       },
       supportedLocales: const [
         Locale('en', ''), // 英文
@@ -84,14 +88,6 @@ class CustomDrawerHeader extends DrawerHeader {
       ),
     );
   }
-}
-
-class Day {
-  final String title;
-  final Color color;
-  final DateTime startDate;
-
-  const Day(this.title, this.color, this.startDate);
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -158,11 +154,22 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ];
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-    Navigator.of(context).pushNamed("add");
+  void addDay() async {
+    Day? day = await Navigator.of(context).push(
+      MaterialPageRoute(
+          builder: (context) {
+            return const AddDay(
+                // 路由参数
+                );
+          },
+          fullscreenDialog: true,
+          maintainState: false),
+    );
+    if (day == null) {
+      return;
+    }
+    days.add(day);
+    forceUpdate();
   }
 
   static const TextStyle titleStyle =
@@ -238,12 +245,14 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  List<Day> days = [
+    Day('dd', ColorAsset.random(), DateTime.parse("2021-10-13")),
+    Day('dd', ColorAsset.random(), DateTime.parse("2021-10-13")),
+    Day('dd', ColorAsset.random(), DateTime.parse("2022-10-13")),
+  ];
+
   Iterable<Widget> get daysWidget {
-    return [
-      Day('dd', ColorAsset.random(), DateTime.parse("2021-10-13")),
-      Day('dd', ColorAsset.random(), DateTime.parse("2021-10-13")),
-      Day('dd', ColorAsset.random(), DateTime.parse("2022-10-13")),
-    ].map((e) => renderDay(e));
+    return days.map((e) => renderDay(e));
   }
 
   Widget renderDay(Day day) {
@@ -341,7 +350,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: addDay,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),

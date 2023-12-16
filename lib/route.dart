@@ -1,6 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+class Routes {
+  static String add = 'add';
+  static String home = '/';
+}
+
 //导航到新路由
 // Navigator.of(context)
 //     .push(
@@ -98,7 +103,6 @@ class CupertinoTestRoute extends StatelessWidget {
 //   );
 // }
 }
-
 
 class TipRoute extends StatelessWidget {
   const TipRoute({
