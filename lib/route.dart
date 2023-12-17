@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Routes {
-  static String add = 'add';
+  // static String add = 'add';
+  // static String selectColor = 'selectColor';
   static String home = '/';
 }
 

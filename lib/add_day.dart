@@ -1,28 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/color_page.dart';
 import 'package:flutter_application_1/logger/logger.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
+import 'db/db.dart';
 import 'extensions/color.dart';
 
-class Day {
-  final String title;
-  final Color color;
-  final DateTime startDate;
+class AddDayPage extends StatefulWidget {
+  Day? day;
 
-  const Day(this.title, this.color, this.startDate);
-}
-
-class AddDay extends StatefulWidget {
-  const AddDay({super.key});
+  AddDayPage(this.day, {super.key});
 
   @override
-  State<AddDay> createState() => AddDayPageState();
+  State<AddDayPage> createState() => AddDayPageState();
 }
 
-class AddDayPageState extends State<AddDay> {
+class AddDayPageState extends State<AddDayPage> {
   static const Color hoverColor = Colors.grey;
   static const Color drawerBackgroundColor = Color(0xFF222222);
   static const TextStyle textStyle = TextStyle(color: Colors.white);
@@ -64,19 +58,19 @@ class AddDayPageState extends State<AddDay> {
       leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
-            Navigator.pop(context, null);
+            Navigator.of(context).pop(null);
           }),
       actions: <Widget>[
         IconButton(
             icon: const Icon(Icons.check),
             onPressed: () {
-              //
               if (_unameController.text.isEmpty) {
                 logger.i("输入内容");
                 return;
               }
-              Day day = Day(_unameController.text, _color, _date);
-              Navigator.pop(context, day);
+              Day day =
+                  Day(_unameController.text, _color, _date, widget.day?.id);
+              Navigator.of(context).pop(day);
             }),
       ],
     );
@@ -86,6 +80,14 @@ class AddDayPageState extends State<AddDay> {
 
   DateTime _date = DateTime.now();
   Color _color = ColorAsset.random();
+
+  @override
+  void initState() {
+    super.initState();
+    _date = widget.day?.startDate ?? DateTime.now();
+    _color = widget.day?.color ?? ColorAsset.random();
+    _unameController.text = widget.day?.title ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,12 +100,14 @@ class AddDayPageState extends State<AddDay> {
           children: <Widget>[
             TextField(
               controller: _unameController,
+              autofocus: false,
               decoration: const InputDecoration(
                 hintText: "那天发生了什么",
               ),
             ),
             GestureDetector(
               onTap: () {
+                FocusScope.of(context).requestFocus(FocusNode());
                 showDatePicker(
                   context: context,
                   initialDate: DateTime.now(),
@@ -143,63 +147,37 @@ class AddDayPageState extends State<AddDay> {
                 ],
               ),
             ),
-            GestureDetector(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Theme(
-                      data: ThemeData.light().copyWith(
-                        buttonTheme: const ButtonThemeData(
-                          colorScheme: ColorScheme.light(
-                            primary: Colors.red, // 这里是你想要的颜色
-                          ),
-                        ),
-                      ),
-                      child: AlertDialog(
-                        title: const Text('选择一种颜色'),
-                        content: SingleChildScrollView(
-                          child: ColorPicker(
-                            pickerColor: _color, // 初始化颜色，你可以根据需要修改
-                            onColorChanged: (Color color) {
-                              // 这里可以处理颜色变化的逻辑，例如保存选择的颜色
-                              _color = color;
-                            },
-                            pickerAreaHeightPercent: 0.8,
-                          ),
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            child: const Text('确认'),
-                            onPressed: () {
-                              setState(() {
-                                _color = _color;
-                              });
-                              Navigator.of(context).pop();
-                              // 这里可以处理点击确认后的逻辑
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
-              child: Row(
-                children: [
-                  ColoredBox(
+            Expanded(
+              child: FractionallySizedBox(
+                alignment: Alignment.topCenter,
+                heightFactor: 0.4,
+                child: GestureDetector(
+                  onTap: _selectColor,
+                  child: Container(
                     color: _color,
-                    child: SizedBox(
-                      width: 100,
-                      height: 40,
-                    ),
-                  )
-                ],
+                    child: const Row(),
+                  ),
+                ),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _selectColor() async {
+    FocusScope.of(context).requestFocus(FocusNode());
+    Color color = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return const ColorsPage();
+        },
+        fullscreenDialog: true,
+      ),
+    );
+    setState(() {
+      _color = color;
+    });
   }
 }

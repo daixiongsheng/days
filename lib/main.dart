@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:lunar/lunar.dart';
 
 import 'add_day.dart';
+import 'db/db.dart';
 import 'route.dart';
 
 void main() {
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
       ],
       routes: {
         // "add": (context) => const ColorsPage(),
-        Routes.add: (context) => const AddDay(),
+        // Routes.add: (context) => const AddDay(),
         Routes.home: (context) => const MyHomePage(), //注册首页路由
       },
       supportedLocales: const [
@@ -99,6 +100,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void initDays() async {
+    var data = await DB.getInstance().getAllDays();
+    setState(() {
+      days = data;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -107,10 +115,14 @@ class _MyHomePageState extends State<MyHomePage> {
       // Navigator.of(context).pushNamed("add");
       forceUpdate();
     });
+    DB.getInstance().getAllDays().then((value) {
+      setState(() {
+        days = value;
+      });
+    });
   }
 
   static const Color hoverColor = Colors.grey;
-  static const Color drawerBackgroundColor = Color(0xFF222222);
   static const TextStyle textStyle = TextStyle(color: Colors.white);
 
   List<Widget> get titles => [
@@ -154,21 +166,26 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ];
 
-  void addDay() async {
+  void _addDay([Day? changedDay]) async {
     Day? day = await Navigator.of(context).push(
       MaterialPageRoute(
-          builder: (context) {
-            return const AddDay(
-                // 路由参数
-                );
-          },
-          fullscreenDialog: true,
-          maintainState: false),
+        builder: (context) {
+          return AddDayPage(changedDay);
+        },
+        fullscreenDialog: true,
+      ),
     );
     if (day == null) {
       return;
     }
-    days.add(day);
+    DB.getInstance().insertOrUpdateDay(day);
+    var index = days.indexOf(day);
+
+    if (index != -1) {
+      days[index].updateWith(day);
+    } else {
+      days.add(day);
+    }
     forceUpdate();
   }
 
@@ -245,11 +262,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  List<Day> days = [
-    Day('dd', ColorAsset.random(), DateTime.parse("2021-10-13")),
-    Day('dd', ColorAsset.random(), DateTime.parse("2021-10-13")),
-    Day('dd', ColorAsset.random(), DateTime.parse("2022-10-13")),
-  ];
+  List<Day> days = [];
 
   Iterable<Widget> get daysWidget {
     return days.map((e) => renderDay(e));
@@ -270,9 +283,30 @@ class _MyHomePageState extends State<MyHomePage> {
         child: InkWell(
           onTap: () {
             logger.i("tap");
+            _addDay(day);
           },
           onLongPress: () {
-            logger.i("onLongPress");
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('提示'),
+                  content: const Text('你已经长按我了！'),
+                  actions: <Widget>[
+                    FloatingActionButton(
+                      // child: Text('确定'),
+                      child: const Icon(Icons.delete),
+                      onPressed: () {
+                        days.remove(day);
+                        DB.getInstance().deleteDay(day);
+                        Navigator.of(context).pop();
+                        forceUpdate();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
           },
           borderRadius: BorderRadius.circular(12),
           splashColor: parseColor('#caca4e'),
@@ -332,9 +366,7 @@ class _MyHomePageState extends State<MyHomePage> {
         header: CustomHeader(), // 可以替换为你自定义的刷新头部
         onRefresh: () async {
           // 刷新请求
-          logger.i("onRefresh start");
-          await Future.delayed(const Duration(seconds: 2));
-          logger.d("onRefresh");
+          initDays();
         },
         slivers: [
           SliverList(
@@ -350,7 +382,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: addDay,
+        onPressed: _addDay,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
@@ -426,7 +458,6 @@ class HomeTopHeader extends HomeStatelessWidget {
         ],
       ),
     );
-    ;
   }
 }
 

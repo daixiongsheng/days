@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/extensions/color.dart';
 import 'package:flutter_application_1/logger/logger.dart';
+import 'package:flutter_application_1/utils/number.dart';
 
 class ColorAsset {
   Color color;
@@ -29,9 +29,7 @@ class ColorAsset {
     if (assets.isEmpty) {
       return defaultColor;
     }
-    return assets[Random(DateTime.now().microsecondsSinceEpoch)
-            .nextInt(assets.length)]
-        .color;
+    return assets[getRandom(end: assets.length)].color;
   }
 
   static Future<dynamic?> loadColors() async {
@@ -62,52 +60,57 @@ class ColorAsset {
 class ColorsPage extends StatelessWidget {
   const ColorsPage({super.key});
 
-  Widget renderColorAsset(ColorAsset asset) {
+  Widget renderColorAsset(ColorAsset asset, BuildContext context) {
     String hex = asset.parent!.name.contains('白') ? "#50616d" : "#ffffff";
-    return Container(
-      margin: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(5)),
-          color: asset.color),
-      width: 100,
-      height: 140,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            asset.name,
-            style: TextStyle(
-                fontSize: 24,
-                color: parseColor(hex),
-                decoration: TextDecoration.none),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Text(
-              asset.hex,
-              textAlign: TextAlign.center,
-              maxLines: 3,
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pop(asset.color);
+      },
+      child: Container(
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
+            color: asset.color),
+        width: 100,
+        height: 140,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              asset.name,
               style: TextStyle(
-                  fontSize: 10,
-                  color: parseColor(hex).withOpacity(0.8),
-                  overflow: TextOverflow.ellipsis,
+                  fontSize: 24,
+                  color: parseColor(hex),
                   decoration: TextDecoration.none),
             ),
-          ),
-          // SizedBox(
-          //   height: 40,
-          //   child: Text(
-          //     asset.intro,
-          //     textAlign: TextAlign.center,
-          //     maxLines: 3,
-          //     style: TextStyle(
-          //         fontSize: 8,
-          //         color: Colors.white.withOpacity(0.8),
-          //         overflow: TextOverflow.ellipsis,
-          //         decoration: TextDecoration.none),
-          //   ),
-          // ),
-        ],
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
+                asset.hex,
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                style: TextStyle(
+                    fontSize: 10,
+                    color: parseColor(hex).withOpacity(0.8),
+                    overflow: TextOverflow.ellipsis,
+                    decoration: TextDecoration.none),
+              ),
+            ),
+            // SizedBox(
+            //   height: 40,
+            //   child: Text(
+            //     asset.intro,
+            //     textAlign: TextAlign.center,
+            //     maxLines: 3,
+            //     style: TextStyle(
+            //         fontSize: 8,
+            //         color: Colors.white.withOpacity(0.8),
+            //         overflow: TextOverflow.ellipsis,
+            //         decoration: TextDecoration.none),
+            //   ),
+            // ),
+          ],
+        ),
       ),
     );
   }
@@ -120,7 +123,9 @@ class ColorsPage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
           child: Wrap(
-            children: [...ColorAsset.assets.map((e) => renderColorAsset(e))],
+            children: [
+              ...ColorAsset.assets.map((e) => renderColorAsset(e, context))
+            ],
           ),
         ),
       ),
