@@ -2,9 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_application_1/extensions/color.dart';
-import 'package:flutter_application_1/logger/logger.dart';
-import 'package:flutter_application_1/utils/number.dart';
+
+import 'extensions/color.dart';
+import 'logger/logger.dart';
+import 'utils/number.dart';
 
 class ColorAsset {
   Color color;

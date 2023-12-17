@@ -1,5 +1,5 @@
 {
   "appTitle": "appTitle",
-  "appTitleFormat": "yyyy / MM / DD",
-  "addDay": "new day"
+  "appTitleFormat": "yyyy / MM / dd",
+  "addDay": "New Day"
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/color_page.dart';
-import 'package:flutter_application_1/logger/logger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
-import 'db/db.dart';
+import 'color_page.dart';
+import 'db/day.dart';
 import 'extensions/color.dart';
+import 'logger/logger.dart';
 
 class AddDayPage extends StatefulWidget {
   Day? day;

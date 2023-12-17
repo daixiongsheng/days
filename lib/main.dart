@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/color_page.dart';
-import 'package:flutter_application_1/extensions/color.dart';
-import 'package:flutter_application_1/logger/logger.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -9,7 +6,11 @@ import 'package:intl/intl.dart';
 import 'package:lunar/lunar.dart';
 
 import 'add_day.dart';
+import 'color_page.dart';
+import 'db/day.dart';
 import 'db/db.dart';
+import 'extensions/color.dart';
+import 'logger/logger.dart';
 import 'route.dart';
 
 void main() {
@@ -37,8 +38,8 @@ class MyApp extends StatelessWidget {
         Routes.home: (context) => const MyHomePage(), //注册首页路由
       },
       supportedLocales: const [
-        Locale('en', ''), // 英文
-        Locale('zh', ''), // 中文
+        Locale('en'), // 英文
+        Locale('zh'), // 中文
       ],
       theme: ThemeData(
         colorScheme:
