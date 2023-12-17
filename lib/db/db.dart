@@ -1,3 +1,3 @@
-import 'package:flutter_application_1/db/hive.dart';
+import 'package:days/db/hive.dart';
 
 typedef DB = HiveDB;
